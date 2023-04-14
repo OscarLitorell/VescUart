@@ -375,6 +375,23 @@ void VescUart::setRPM(float rpm, uint8_t canId) {
 	packSendPayload(payload, payloadSize);
 }
 
+void VescUart::setPos(float pos) {
+	return setRPM(pos, 0);
+}
+
+void VescUart::setPos(float pos, uint8_t canId) {
+	int32_t index = 0;
+	int payloadSize = (canId == 0 ? 5 : 7);
+	uint8_t payload[payloadSize];
+	if (canId != 0) {
+		payload[index++] = { COMM_FORWARD_CAN };
+		payload[index++] = canId;
+	}
+	payload[index++] = { COMM_SET_POS };
+	buffer_append_int32(payload, (int32_t)(pos * 1000000), &index);
+	packSendPayload(payload, payloadSize);
+}
+
 void VescUart::setDuty(float duty) {
 	return setDuty(duty, 0);
 }
